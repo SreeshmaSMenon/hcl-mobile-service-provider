@@ -13,26 +13,26 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
+@Table
 @Setter
 @Getter
-@Table
-public class User {
+public class Connection {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, updatable = false)
+	private Long connectionId;
+	@Column(nullable = false)
 	private Long userId;
 	@Column(nullable = false)
-	private String name;
-	@Column(nullable = false, unique = true)
-	private String email;
+	private Long planId;
 	@Column(nullable = false)
-	private LocalDate dob;
+	private Long mobileId;
 	@Column(nullable = false)
-	private String location;
-	private String altMobileNumber;
-	@Column(nullable = false, unique = true)
-	private String idProofNumber;
+	private String status;
 	@Column(nullable = false)
-	private String idProofType;
-
+	private LocalDate requestdate;
+	@Column(nullable = false)
+	private LocalDate updateDate;
+	private String remark;
 }
