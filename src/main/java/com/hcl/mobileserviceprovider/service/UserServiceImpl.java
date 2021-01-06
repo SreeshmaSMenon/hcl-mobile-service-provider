@@ -3,6 +3,7 @@ package com.hcl.mobileserviceprovider.service;
 import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
 import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
+import com.hcl.mobileserviceprovider.service.entity.MobileInfo;
 import com.hcl.mobileserviceprovider.service.entity.User;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
 import com.hcl.mobileserviceprovider.service.repository.MobileInfoRepository;
@@ -31,48 +32,44 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<ResponseDto> obtainConnection(UserRequestDto userRequestDto) {
-
+        ResponseDto responseDto = new ResponseDto();
         User user = new User();
         BeanUtils.copyProperties(userRequestDto, user);
 
-        //Inserting userdata into user table
-        User userData = userRepository.save(user);
-
         //Change the Mobile number status"A(Availability) to NA(Not available) in MobileInfo table
 
-        Optional<Connection> connectionData = connectionRepository.findById(userRequestDto.getMobileId());
+        Optional<Connection> connectionData = connectionRepository.findByMobileId(userRequestDto.getMobileId());
 
-       /* CommonResponseDto commonResponseDto = new CommonResponseDto();
         if (connectionData.isPresent()) {
-            commonResponseDto.setMessage("Selected Mobile number is not available");
+            responseDto.setMessage("Selected Mobile number is not available");
+            return Optional.of(responseDto);
 
         } else {
+            //Inserting userdata into user table
+            User userData = userRepository.save(user);
             Optional<MobileInfo> mobileInfo = mobileInfoRepository.findById(userRequestDto.getMobileId());
             if (mobileInfo.isPresent()) {
                 mobileInfo.get().setStatus("NA");
                 mobileInfoRepository.save(mobileInfo.get());
             }
-        }*/
 
-        Connection connection = new Connection();
-        connection.setMobileId(userRequestDto.getMobileId());
-        connection.setPlanId(userRequestDto.getPlanId());
-        connection.setRequestdate(LocalDate.now());
-        connection.setStatus(Status.IN_PROGRESS.toString());
-        connection.setUpdateDate(LocalDate.now());
-        connection.setUserId(userData.getUserId());
+            Connection connection = new Connection();
+            connection.setMobileId(userRequestDto.getMobileId());
+            connection.setPlanId(userRequestDto.getPlanId());
+            connection.setRequestdate(LocalDate.now());
+            connection.setStatus(Status.IN_PROGRESS.toString());
+            connection.setUpdateDate(LocalDate.now());
+            connection.setUserId(userData.getUserId());
 
+            //Inserting connectionRequest data into Connection table
+            Connection connectionResult = connectionRepository.save(connection);
 
-        //Inserting connectionRequest data into Connection table
-        Connection connectionResult = connectionRepository.save(connection);
+            responseDto.setMessage("Successfully created..");
+            responseDto.setRequestId(connectionResult.getConnectionId());
+            responseDto.setStatusCode(200);
 
-        ResponseDto responseDto = new ResponseDto();
-        responseDto.setMessage("Successfully created..");
-        responseDto.setRequestId(connectionResult.getConnectionId());
-        responseDto.setStatusCode(200);
-
-        return Optional.of(responseDto);
-
+            return Optional.of(responseDto);
+        }
 
     }
 }
