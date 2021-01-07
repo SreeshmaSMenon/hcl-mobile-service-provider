@@ -1,10 +1,13 @@
 package com.hcl.mobileserviceprovider.service;
 
+import static org.mockito.Mockito.doReturn;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -17,6 +20,8 @@ import com.hcl.mobileserviceprovider.service.entity.Plan;
 import com.hcl.mobileserviceprovider.service.entity.User;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
 import com.hcl.mobileserviceprovider.util.Status;
+
+import junit.framework.Assert;
 
 @ExtendWith(MockitoExtension.class)
 public class ConnectionServiceImplTest {
@@ -42,6 +47,15 @@ public class ConnectionServiceImplTest {
 	public void setUp() {
 
 		connections = buildConnections();
+
+	}
+
+	@Test
+	public void shouldReturnConnectionnList() {
+		doReturn(connections).when(connectionRepository).findAllByStatus(STATUS);
+		List<ConnectionResponse> responses = connectionService.retrieveConnections();
+		ConnectionResponse response = responses.get(0);
+		Assert.assertEquals(CONNECTION_ID, response.getConnectionId());
 
 	}
 
