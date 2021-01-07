@@ -9,8 +9,8 @@ import lombok.Setter;
 public class ConnectionResponse {
 	private Long connectionId;
 	private Long userId;
-	private Long planId;
-	private Long mobileId;
+	private String planName;
+	private String number;
 	private String status;
 	private LocalDate requestdate;
 	private LocalDate updateDate;

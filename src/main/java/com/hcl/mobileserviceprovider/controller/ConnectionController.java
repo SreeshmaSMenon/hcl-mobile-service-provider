@@ -37,14 +37,11 @@ public class ConnectionController {
 	@GetMapping
 	public ResponseEntity<List<ConnectionResponse>> retrieveConnections() {
 		log.info("Started retrieving connections");
-		/*
-		 * return connectionService.retrieveConnections() .map(result -> new
-		 * ResponseEntity<>(result,HttpStatus.OK));
-		 */
 		List<ConnectionResponse> connections = new ArrayList<ConnectionResponse>();
 		Optional<List<ConnectionResponse>> connectionsOptional = connectionService.retrieveConnections();
 		if (connectionsOptional.isPresent())
 			connections = connectionsOptional.get();
+		log.info("Retrieving connections completed");
 		return new ResponseEntity<>(connections, HttpStatus.OK);
 	}
 
