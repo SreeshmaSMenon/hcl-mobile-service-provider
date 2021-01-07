@@ -1,6 +1,5 @@
 package com.hcl.mobileserviceprovider.service;
 
-import com.hcl.mobileserviceprovider.service.dto.Connection;
 import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
 
 import java.util.List;
