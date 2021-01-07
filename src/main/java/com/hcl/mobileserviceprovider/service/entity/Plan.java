@@ -16,7 +16,6 @@ import lombok.Setter;
 @Getter
 public class Plan {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, updatable = false)
 	private Long planId;
 	@Column(nullable = false)

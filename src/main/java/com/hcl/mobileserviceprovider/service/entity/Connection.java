@@ -19,7 +19,6 @@ import lombok.Setter;
 public class Connection {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(nullable = false, updatable = false)
 	private Long connectionId;
 	@Column(nullable = false)
