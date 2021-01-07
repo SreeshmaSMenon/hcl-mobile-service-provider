@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
+import com.hcl.mobileserviceprovider.service.ConnectionServiceImpl;
 import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
 import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
