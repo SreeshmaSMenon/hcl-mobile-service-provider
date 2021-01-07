@@ -4,6 +4,7 @@ import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
 import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
 import com.hcl.mobileserviceprovider.service.entity.MobileInfo;
+import com.hcl.mobileserviceprovider.service.entity.Plan;
 import com.hcl.mobileserviceprovider.service.entity.User;
 import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
 import com.hcl.mobileserviceprovider.service.exception.UserNotFoundException;
@@ -44,12 +45,11 @@ public class UserServiceImpl implements UserService {
             throw new MobileServiceProviderException(MobileServiceProviderConstants.ERROR_EMAIL_MESSAGE);
         if (!phoneNumberValidation(userRequestDto.getAltMobileNumber()))
             throw new MobileServiceProviderException(MobileServiceProviderConstants.ERROR_PHONE_NUMBER_MESSAGE);
-//        Optional<User> userExist = userRepository.findByEmailAndIdProofNumber(userRequestDto.getEmail(), userRequestDto.getIdProofNumber());
         Optional<User> userExist = userRepository.findByEmail(userRequestDto.getEmail());
         if (userExist.isPresent())
             throw new UserNotFoundException(MobileServiceProviderConstants.ERROR_USER_ALREADY_EXIST);
         //Change the Mobile number status"A(Availability) to NA(Not available) in MobileInfo table
-        Optional<Connection> connectionData = connectionRepository.findByMobileId(userRequestDto.getMobileId());
+        Optional<Connection> connectionData = connectionRepository.findByMobileInfo(userRequestDto.getMobileId());
         if (connectionData.isPresent()) {
             throw new MobileServiceProviderException(MobileServiceProviderConstants.ERROR_MOBILE_NUM_ALREADY_EXIST);
         } else {
@@ -61,12 +61,21 @@ public class UserServiceImpl implements UserService {
                 mobileInfoRepository.save(mobileInfo.get());
             }
             Connection connection = new Connection();
-            connection.setMobileId(userRequestDto.getMobileId());
-            connection.setPlanId(userRequestDto.getPlanId());
+            MobileInfo mobileInfo1 = new MobileInfo();
+            mobileInfo1.setMobileId(userRequestDto.getMobileId());
+
+            Plan plan = new Plan();
+            plan.setPlanId(userRequestDto.getPlanId());
+
+            User user1 = new User();
+            user1.setUserId(userData.getUserId());
+
+            connection.setMobileInfo(mobileInfo1);
+            connection.setPlan(plan);
             connection.setRequestdate(LocalDate.now());
             connection.setStatus(Status.IN_PROGRESS.toString());
             connection.setUpdateDate(LocalDate.now());
-            connection.setUserId(userData.getUserId());
+            connection.setUser(user1);
 
             //Inserting connectionRequest data into Connection table
             Connection connectionResult = connectionRepository.save(connection);

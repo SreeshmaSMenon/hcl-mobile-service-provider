@@ -1,16 +1,14 @@
 package com.hcl.mobileserviceprovider.service;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
+import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
+import com.hcl.mobileserviceprovider.util.Status;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
-import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
-import com.hcl.mobileserviceprovider.service.dto.MobileServiceProviderMapper;
-import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,10 +17,19 @@ public class ConnectionServiceImpl implements ConnectionService {
 	private final ConnectionRepository connectionRepository;
 
 	@Override
-	public Optional<List<ConnectionResponse>> retrieveConnections() {
+	public List<ConnectionResponse> retrieveConnections() {
 
-		return Optional.of(connectionRepository.findAll().stream()
-				.map(MobileServiceProviderMapper.MAPPER::toConnectionResponse).collect(Collectors.toList()));
+		List<ConnectionResponse> connectionResponseList = connectionRepository.findAllByStatus(Status.IN_PROGRESS.toString()).stream().map(connection -> {
+
+			ConnectionResponse con = new ConnectionResponse();
+			con.setPlanName(connection.getPlan().getPlanName());
+			con.setMobileNumber(connection.getMobileInfo().getNumber());
+			con.setUserName(connection.getUser().getName());
+			BeanUtils.copyProperties(connection, con);
+			return con;
+
+		}).collect(Collectors.toList());
+		return connectionResponseList;
 	}
 
 }
