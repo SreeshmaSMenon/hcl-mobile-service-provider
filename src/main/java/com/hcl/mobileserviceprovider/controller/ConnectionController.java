@@ -33,10 +33,6 @@ public class ConnectionController {
     @GetMapping
     public ResponseEntity<List<ConnectionResponse>> retrieveConnections() {
         log.info("Started retrieving connections");
-        /*
-         * return connectionService.retrieveConnections() .map(result -> new
-         * ResponseEntity<>(result,HttpStatus.OK));
-         */
         return new ResponseEntity<>(connectionService.retrieveConnections(), HttpStatus.OK);
     }
 
