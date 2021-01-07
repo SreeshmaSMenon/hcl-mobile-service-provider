@@ -14,6 +14,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
+import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
 import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
@@ -40,10 +41,10 @@ public class ConnectionServiceTest {
 		conn.setUpdateDate(updateDate);
 		conn.setStatus("In-progress");
 		Mockito.when(ConnectionRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(conn));
-		Optional<com.hcl.mobileserviceprovider.service.dto.Connection> connectionResponse = connectionService
+		Optional<ConnectionResponse> connectionResponse = connectionService
 				.fetchById("1234");
 		Assert.assertTrue(connectionResponse.isPresent());
-		com.hcl.mobileserviceprovider.service.dto.Connection connection = connectionResponse.get();
+		ConnectionResponse connection = connectionResponse.get();
 		Assert.assertEquals("In-progress", connection.getStatus());
 		Assert.assertEquals(updateDate, connection.getUpdateDate());
 		Assert.assertNull(connection.getConnectionId());

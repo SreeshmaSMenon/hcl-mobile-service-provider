@@ -19,6 +19,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
 import com.hcl.mobileserviceprovider.service.dto.Connection;
+import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = ConnectionController.class)
@@ -33,7 +34,7 @@ public class ConnectionControllerTest {
 	@Test
 	public void retrieveDetailsForRequest() throws Exception {
 
-		Connection connection = new Connection();
+		ConnectionResponse connection = new ConnectionResponse();
 		LocalDate localDate = LocalDate.of(2020, 10, 10);
 		connection.setStatus("in-progress");
 		connection.setUpdateDate(localDate);

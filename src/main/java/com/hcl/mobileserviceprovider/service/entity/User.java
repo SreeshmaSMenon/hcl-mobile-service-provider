@@ -1,16 +1,12 @@
 package com.hcl.mobileserviceprovider.service.entity;
 
-import java.time.LocalDate;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Setter
@@ -34,5 +30,9 @@ public class User {
 	private String idProofNumber;
 	@Column(nullable = false)
 	private String idProofType;
+
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference
+	private List<Connection> connectionList;
 
 }
