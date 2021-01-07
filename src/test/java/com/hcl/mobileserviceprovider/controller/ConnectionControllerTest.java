@@ -18,7 +18,6 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
-import com.hcl.mobileserviceprovider.service.dto.Connection;
 import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
 
 @RunWith(SpringRunner.class)
