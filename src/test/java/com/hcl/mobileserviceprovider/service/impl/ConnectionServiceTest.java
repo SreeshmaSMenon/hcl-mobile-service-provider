@@ -1,5 +1,6 @@
 package com.hcl.mobileserviceprovider.service.impl;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.junit.Assert;
@@ -34,9 +35,9 @@ public class ConnectionServiceTest {
 	@Test
 	public void testFetchByIdWhenIdIsAvailable() {
 		Connection conn = new Connection();
+		LocalDate updateDate = LocalDate.of(2020, 10, 10);
 		conn.setConnectionId(1234L);
-		conn.setMobileId(12345L);
-		conn.setPlanId(345L);
+		conn.setUpdateDate(updateDate);
 		conn.setStatus("In-progress");
 		Mockito.when(ConnectionRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(conn));
 		Optional<com.hcl.mobileserviceprovider.service.dto.Connection> connectionResponse = connectionService
@@ -44,6 +45,7 @@ public class ConnectionServiceTest {
 		Assert.assertTrue(connectionResponse.isPresent());
 		com.hcl.mobileserviceprovider.service.dto.Connection connection = connectionResponse.get();
 		Assert.assertEquals("In-progress", connection.getStatus());
+		Assert.assertEquals(updateDate, connection.getUpdateDate());
 		Assert.assertNull(connection.getConnectionId());
 		Assert.assertNull(connection.getRemark());
 
