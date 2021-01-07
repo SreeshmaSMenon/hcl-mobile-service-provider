@@ -1,5 +1,9 @@
 package com.hcl.mobileserviceprovider.service.repository;
 
-public interface ConnectionRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.hcl.mobileserviceprovider.service.entity.Connection;
+
+public interface ConnectionRepository extends JpaRepository<Connection,Long> {
+	
 }
