@@ -1,7 +1,7 @@
 package com.hcl.mobileserviceprovider.service.repository;
 
-import com.hcl.mobileserviceprovider.service.entity.Connection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import com.hcl.mobileserviceprovider.service.entity.Connection;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,5 +25,5 @@ public interface ConnectionRepository extends JpaRepository<Connection, Long> {
     @Query("update Connection c set c.status='CONNECTION_ENABLED', c.updateDate=now() "
             + "where c.status='APPROVED'")
     void activateConnections();
-
+	
 }
