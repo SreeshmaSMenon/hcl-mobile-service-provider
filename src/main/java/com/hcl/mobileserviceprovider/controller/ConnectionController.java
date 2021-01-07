@@ -43,7 +43,7 @@ public class ConnectionController {
         return new ResponseEntity<>(connectionService.retrieveConnections(), HttpStatus.OK);
     }
 	
-	@GetMapping("/connection/{id}")
+	@GetMapping("/{id}")
     public ResponseEntity<Optional<ConnectionResponse>> findById(@PathVariable String id) {
         return new ResponseEntity<>(ConnectionService.fetchById(id), HttpStatus.OK);
     }
