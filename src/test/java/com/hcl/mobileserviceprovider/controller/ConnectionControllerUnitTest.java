@@ -1,11 +1,14 @@
 package com.hcl.mobileserviceprovider.controller;
 
-import com.hcl.mobileserviceprovider.service.ConnectionService;
-import com.hcl.mobileserviceprovider.service.dto.*;
-import com.hcl.mobileserviceprovider.service.entity.Connection;
-import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
-import com.hcl.mobileserviceprovider.util.Status;
-import org.junit.Assert;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.doReturn;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,11 +18,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import com.hcl.mobileserviceprovider.service.ConnectionService;
+import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
+import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
+import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.util.Status;
 
 @ExtendWith(MockitoExtension.class)
 public class ConnectionControllerUnitTest {
@@ -30,8 +33,6 @@ public class ConnectionControllerUnitTest {
     @InjectMocks
     ConnectionController connectionController;
 
-
-    private static final String REMARK = "None";
     private static final String USER_NAME = "Sree";
     private static final String PLAN_NAME = "Plan1";
     private static final String MOBILE_NUMBER = "9876564534";
@@ -47,18 +48,18 @@ public class ConnectionControllerUnitTest {
     private static final Integer STATUS_CODE = 200;
     private static final Long REQUEST_ID = 1L;
 
-
     @Test
     public void obtainConnectionTest() {
 
         UserRequestDto userRequestDto = getUserRequestDto();
         ResponseDto responseDto = getResponseDto();
-
-        Mockito.when(connectionService.obtainConnection(Mockito.any()))
-                .thenReturn(Optional.of(responseDto));
-
+        doReturn(Optional.of(responseDto)).when(connectionService).obtainConnection(Mockito.any());
         ResponseEntity<Optional<ResponseDto>> actualResponse = connectionController.createConnection(userRequestDto);
-        Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        ResponseDto actualResponseDto = actualResponse.getBody().get();
+        assertNotNull(actualResponseDto);
+        assertEquals(REQUEST_ID, actualResponseDto.getRequestId());
+        assertEquals(MESSAGE, actualResponseDto.getMessage());
     }
 
     @Test
@@ -66,36 +67,23 @@ public class ConnectionControllerUnitTest {
         ConnectionResponse connectionResponse = getConnectionResponse();
         List<ConnectionResponse> connectionResponseList = new ArrayList<>();
         connectionResponseList.add(connectionResponse);
-        Mockito.when(connectionService.retrieveConnections())
-                .thenReturn(connectionResponseList);
-
-
+        doReturn(connectionResponseList).when(connectionService).retrieveConnections();
         ResponseEntity<List<ConnectionResponse>> actualResponse = connectionController.retrieveConnections();
-        Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
-
+        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        ConnectionResponse actualConnectionInfo = actualResponse.getBody().get(0);
+        assertConnectionResponse(actualConnectionInfo);
     }
 
     @Test
     public void fetchConnectionByIdTest() {
         ConnectionResponse connectionResponse = getConnectionResponse();
-        Mockito.when(connectionService.fetchById(Mockito.anyString()))
-                .thenReturn(Optional.of(connectionResponse));
+        doReturn(Optional.of(connectionResponse)).when(connectionService).fetchById(Mockito.anyString());
+        ResponseEntity<Optional<ConnectionResponse>> actualResponse = connectionController
+                .findById(String.valueOf(CONNECTION_ID));
+        assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+        ConnectionResponse actualConnectionInfo = actualResponse.getBody().get();
+        assertConnectionResponse(actualConnectionInfo);
 
-
-        ResponseEntity<Optional<ConnectionResponse>> actualResponse = connectionController.findById(String.valueOf(CONNECTION_ID));
-        Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
-
-    }
-
-    @Test
-    public void testApproveOrRejectConnection() throws InvalidConnectionIdException {
-        ApproveOrRejectConnection approveOrRejectConnection = getApproveOrRejectConnection();
-        ApproveOrRejectConnectionResponse approveOrRejectConnectionResponse = getApproveOrRejectConnectionResponse();
-        Mockito.when(connectionService.approveOrRejectConnection(approveOrRejectConnection, 1L)).thenReturn(approveOrRejectConnectionResponse);
-
-        ResponseEntity<ApproveOrRejectConnectionResponse> result = connectionController.approveOrRejectConnection(approveOrRejectConnection, 1L);
-
-        Assert.assertEquals(HttpStatus.OK, result.getStatusCode());
     }
 
     private ConnectionResponse getConnectionResponse() {
@@ -131,29 +119,12 @@ public class ConnectionControllerUnitTest {
         return userRequestDto;
     }
 
-    private Connection getConnection() {
-
-        Connection connection = new Connection();
-        connection.setRequestdate(LocalDate.now());
-        connection.setStatus(Status.IN_PROGRESS.toString());
-        connection.setUpdateDate(LocalDate.now());
-        connection.setConnectionId(CONNECTION_ID);
-        connection.setRemark(REMARK);
-        return connection;
-    }
-
-    private ApproveOrRejectConnection getApproveOrRejectConnection() {
-        ApproveOrRejectConnection approveOrRejectConnection = new ApproveOrRejectConnection();
-        approveOrRejectConnection.setRemark("Accepted");
-        approveOrRejectConnection.setStatus("Approved");
-        return approveOrRejectConnection;
-    }
-
-    private ApproveOrRejectConnectionResponse getApproveOrRejectConnectionResponse() {
-        ApproveOrRejectConnectionResponse approveOrRejectConnectionResponse = new ApproveOrRejectConnectionResponse();
-        approveOrRejectConnectionResponse.setStatusCode(200);
-        approveOrRejectConnectionResponse.setMessage("Success");
-        return approveOrRejectConnectionResponse;
+    private void assertConnectionResponse(ConnectionResponse actualConnectionInfo) {
+        assertEquals(CONNECTION_ID, actualConnectionInfo.getConnectionId());
+        assertEquals(USER_NAME, actualConnectionInfo.getUserName());
+        assertEquals(MOBILE_NUMBER, actualConnectionInfo.getMobileNumber());
+        assertEquals(PLAN_NAME, actualConnectionInfo.getPlanName());
+        assertEquals(Status.IN_PROGRESS.name(), actualConnectionInfo.getStatus());
     }
 
 }

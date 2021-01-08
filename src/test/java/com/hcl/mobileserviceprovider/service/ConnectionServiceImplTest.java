@@ -1,19 +1,16 @@
 package com.hcl.mobileserviceprovider.service;
 
-import com.hcl.mobileserviceprovider.service.dto.*;
-import com.hcl.mobileserviceprovider.service.entity.Connection;
-import com.hcl.mobileserviceprovider.service.entity.MobileInfo;
-import com.hcl.mobileserviceprovider.service.entity.Plan;
-import com.hcl.mobileserviceprovider.service.entity.User;
-import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
-import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
-import com.hcl.mobileserviceprovider.service.exception.UserNotFoundException;
-import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
-import com.hcl.mobileserviceprovider.service.repository.MobileInfoRepository;
-import com.hcl.mobileserviceprovider.service.repository.UserRepository;
-import com.hcl.mobileserviceprovider.util.MobileServiceProviderConstants;
-import com.hcl.mobileserviceprovider.util.Status;
-import junit.framework.Assert;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.doReturn;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,14 +20,20 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.BeanUtils;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doReturn;
+import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
+import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
+import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.service.entity.Connection;
+import com.hcl.mobileserviceprovider.service.entity.MobileInfo;
+import com.hcl.mobileserviceprovider.service.entity.Plan;
+import com.hcl.mobileserviceprovider.service.entity.User;
+import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
+import com.hcl.mobileserviceprovider.service.exception.UserNotFoundException;
+import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
+import com.hcl.mobileserviceprovider.service.repository.MobileInfoRepository;
+import com.hcl.mobileserviceprovider.service.repository.UserRepository;
+import com.hcl.mobileserviceprovider.util.MobileServiceProviderConstants;
+import com.hcl.mobileserviceprovider.util.Status;
 
 @ExtendWith(MockitoExtension.class)
 public class ConnectionServiceImplTest {
@@ -52,14 +55,12 @@ public class ConnectionServiceImplTest {
     private static final Long MOBILE_ID = 1L;
     private static final Long USER_ID = 1L;
 
-
     @Mock
     private ConnectionRepository connectionRepository;
     @Mock
     private MobileInfoRepository mobileInfoRepository;
     @Mock
     private UserRepository userRepository;
-
 
     @InjectMocks
     private ConnectionServiceImpl connectionService;
@@ -71,16 +72,12 @@ public class ConnectionServiceImplTest {
     private MobileInfo mobileInfo;
     private User user;
     private Plan plan;
-    private ApproveOrRejectConnection approveOrRejectConnection;
-    private ApproveOrRejectConnectionResponse approveOrRejectConnectionResponse;
-
 
     @BeforeEach
     public void setUp() {
 
         connections = buildConnections();
         doCreateConnection();
-        doApproveOrRejectConnection();
     }
 
     @Test
@@ -88,7 +85,7 @@ public class ConnectionServiceImplTest {
         doReturn(connections).when(connectionRepository).findAllByStatus(STATUS);
         List<ConnectionResponse> responses = connectionService.retrieveConnections();
         ConnectionResponse response = responses.get(0);
-        Assert.assertEquals(CONNECTION_ID, response.getConnectionId());
+        assertEquals(CONNECTION_ID, response.getConnectionId());
 
     }
 
@@ -96,14 +93,11 @@ public class ConnectionServiceImplTest {
     public void testFetchByIdWhenIdIsAvailable() {
         Connection conn = getConnection();
         Mockito.when(connectionRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(conn));
-        Optional<ConnectionResponse> connectionResponse = connectionService
-                .fetchById("1234");
-        Assert.assertTrue(connectionResponse.isPresent());
+        Optional<ConnectionResponse> connectionResponse = connectionService.fetchById("1234");
+        assertTrue(connectionResponse.isPresent());
         ConnectionResponse connection = connectionResponse.get();
-        Assert.assertEquals(STATUS, connection.getStatus());
-        Assert.assertEquals(UPDATE_DATE, connection.getUpdateDate());
-        Assert.assertNull(connection.getConnectionId());
-        Assert.assertNull(connection.getRemark());
+        assertEquals(STATUS, connection.getStatus());
+        assertEquals(UPDATE_DATE, connection.getUpdateDate());
 
     }
 
@@ -166,6 +160,8 @@ public class ConnectionServiceImplTest {
         connection.setPlan(plan);
         MobileInfo info = new MobileInfo();
         info.setNumber(MOBILE_NUMBER);
+        connection.setRequestdate(REQUEST_DATE);
+        connection.setUpdateDate(UPDATE_DATE);
         connection.setMobileInfo(info);
         connectionsList.add(connection);
         return connectionsList;
@@ -173,7 +169,7 @@ public class ConnectionServiceImplTest {
 
     @Test
     public void obtainConnectionTest() {
-        //GIVEN
+        // GIVEN
 
         Mockito.when(userRepository.save(Mockito.any())).thenReturn(user);
 
@@ -182,10 +178,10 @@ public class ConnectionServiceImplTest {
 
         Mockito.when(connectionRepository.save(Mockito.any())).thenReturn(connection);
 
-        //WHEN
+        // WHEN
         Optional<ResponseDto> savedCustomer = connectionService.obtainConnection(userRequestDto);
 
-        //THEN
+        // THEN
         org.junit.Assert.assertNotNull(savedCustomer);
     }
 
@@ -208,26 +204,6 @@ public class ConnectionServiceImplTest {
         });
         assertEquals(MobileServiceProviderConstants.ERROR_USER_ALREADY_EXIST, exception.getMessage());
     }
-
-    @Test
-    public void approveOrRejectConnection() throws InvalidConnectionIdException {
-        Mockito.when(connectionRepository.findById(1L)).thenReturn(Optional.of(connection));
-
-        ApproveOrRejectConnectionResponse result = connectionService.approveOrRejectConnection(approveOrRejectConnection, 1L);
-
-        assertEquals(approveOrRejectConnectionResponse.getMessage(), result.getMessage());
-        assertEquals(approveOrRejectConnectionResponse.getStatusCode(), result.getStatusCode());
-    }
-
-    @Test
-    public void approveOrRejectConnectionForException() {
-
-        Throwable exception = assertThrows(InvalidConnectionIdException.class, () -> {
-            connectionService.approveOrRejectConnection(approveOrRejectConnection, 2L);
-        });
-        assertEquals(MobileServiceProviderConstants.CONNECTION_ID_NOT_FOUND, exception.getMessage());
-    }
-
 
     private UserRequestDto getUserRequestDto() {
         userRequestDto = new UserRequestDto();
@@ -287,24 +263,4 @@ public class ConnectionServiceImplTest {
         getPlanDto();
         getConnection();
     }
-
-    private ApproveOrRejectConnection getApproveOrRejectConnection() {
-        approveOrRejectConnection = new ApproveOrRejectConnection();
-        approveOrRejectConnection.setRemark("Accepted");
-        approveOrRejectConnection.setStatus("Approved");
-        return approveOrRejectConnection;
-    }
-
-    private ApproveOrRejectConnectionResponse getApproveOrRejectConnectionResponse() {
-        approveOrRejectConnectionResponse = new ApproveOrRejectConnectionResponse();
-        approveOrRejectConnectionResponse.setStatusCode(200);
-        approveOrRejectConnectionResponse.setMessage("Success");
-        return approveOrRejectConnectionResponse;
-    }
-
-    private void doApproveOrRejectConnection() {
-        getApproveOrRejectConnection();
-        getApproveOrRejectConnectionResponse();
-    }
-
 }
