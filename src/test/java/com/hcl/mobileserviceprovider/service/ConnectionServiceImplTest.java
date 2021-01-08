@@ -89,7 +89,7 @@ public class ConnectionServiceImplTest {
 	@Test
 	public void shouldReturnConnectionnList() {
 		doReturn(connections).when(connectionRepository).findAllByStatus(STATUS);
-		List<ConnectionResponse> responses = connectionService.retrieveConnections();
+		List<ConnectionResponse> responses = connectionService.retrieveConnections().get();
 		ConnectionResponse response = responses.get(0);
 		assertEquals(CONNECTION_ID, response.getConnectionId());
 
@@ -189,6 +189,28 @@ public class ConnectionServiceImplTest {
 
 		// THEN
 		org.junit.Assert.assertNotNull(savedCustomer);
+	}
+
+	@Test
+	public void shouldReturnInvalidEmailExcepion() {
+		// GIVEN
+		userRequestDto.setEmail(null);
+		// THEN
+		Throwable exception = assertThrows(MobileServiceProviderException.class, () -> {
+			connectionService.obtainConnection(userRequestDto);
+		});
+		assertEquals(MobileServiceProviderConstants.ERROR_EMAIL_MESSAGE, exception.getMessage());
+	}
+	
+	@Test
+	public void shouldReturnInvalidMobileNumberException() {
+		// GIVEN
+		userRequestDto.setAltMobileNumber("21");
+		// THEN
+		Throwable exception = assertThrows(MobileServiceProviderException.class, () -> {
+			connectionService.obtainConnection(userRequestDto);
+		});
+		assertEquals(MobileServiceProviderConstants.ERROR_PHONE_NUMBER_MESSAGE, exception.getMessage());
 	}
 
 	@Test

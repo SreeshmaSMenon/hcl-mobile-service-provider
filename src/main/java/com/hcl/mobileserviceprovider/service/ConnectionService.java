@@ -16,7 +16,7 @@ public interface ConnectionService {
      *
      * @return optional of list of ConnectionResponse
      */
-    List<ConnectionResponse> retrieveConnections();
+	Optional<List<ConnectionResponse>> retrieveConnections();
 
     /**
      * Retrieves connection by id

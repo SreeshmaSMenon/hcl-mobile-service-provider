@@ -71,9 +71,9 @@ public class ConnectionControllerUnitTest {
 		List<ConnectionResponse> connectionResponseList = new ArrayList<>();
 		connectionResponseList.add(connectionResponse);
 		doReturn(connectionResponseList).when(connectionService).retrieveConnections();
-		ResponseEntity<List<ConnectionResponse>> actualResponse = connectionController.retrieveConnections();
+		ResponseEntity<Optional<List<ConnectionResponse>>> actualResponse = connectionController.retrieveConnections();
 		assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
-		ConnectionResponse actualConnectionInfo = actualResponse.getBody().get(0);
+		ConnectionResponse actualConnectionInfo = actualResponse.getBody().get().get(0);
 		assertConnectionResponse(actualConnectionInfo);
 	}
 
