@@ -2,6 +2,9 @@ package com.hcl.mobileserviceprovider.controller;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
 import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
+import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
+import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.service.entity.Connection;
 import com.hcl.mobileserviceprovider.util.Status;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -16,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -39,12 +43,27 @@ public class ConnectionControllerUnitTest {
     private static final String LOCATION = "Banglore";
     private static final Long PLAN_ID = 1L;
     private static final Long MOBILE_ID = 1L;
-    private static final Long USER_ID = 1L;
     private static final Long CONNECTION_ID = 1L;
+    private static final String MESSAGE = "Successfully created";
+    private static final Integer STATUS_CODE = 200;
+    private static final Long REQUEST_ID = 1L;
 
 
     @Test
-    public void getAllEmployeesTest() {
+    public void obtainConnectionTest() {
+
+        UserRequestDto userRequestDto = getUserRequestDto();
+        ResponseDto responseDto = getResponseDto();
+
+        Mockito.when(connectionService.obtainConnection(Mockito.any()))
+                .thenReturn(Optional.of(responseDto));
+
+        ResponseEntity<Optional<ResponseDto>> actualResponse = connectionController.createConnection(userRequestDto);
+        Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+    }
+
+    @Test
+    public void retrieveConnectionsTest() {
         ConnectionResponse connectionResponse = getConnectionResponse();
         List<ConnectionResponse> connectionResponseList = new ArrayList<>();
         connectionResponseList.add(connectionResponse);
@@ -53,6 +72,17 @@ public class ConnectionControllerUnitTest {
 
 
         ResponseEntity<List<ConnectionResponse>> actualResponse = connectionController.retrieveConnections();
+        Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+
+    }
+
+    @Test
+    public void retrieveDetailsForRequest() {
+
+        ConnectionResponse connectionResponse = getConnectionResponse();
+        Mockito.when(connectionService.fetchById(Mockito.anyString())).thenReturn(Optional.of(connectionResponse));
+
+        ResponseEntity<Optional<ConnectionResponse>> actualResponse = connectionController.findById("1L");
         Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 
     }
@@ -67,6 +97,38 @@ public class ConnectionControllerUnitTest {
         connectionResponse.setUpdateDate(LocalDate.now());
         connectionResponse.setRequestdate(LocalDate.now());
         return connectionResponse;
+    }
+
+    private ResponseDto getResponseDto() {
+        ResponseDto responseDto = new ResponseDto();
+        responseDto.setMessage(MESSAGE);
+        responseDto.setRequestId(REQUEST_ID);
+        responseDto.setStatusCode(STATUS_CODE);
+        return responseDto;
+    }
+
+    private UserRequestDto getUserRequestDto() {
+        UserRequestDto userRequestDto = new UserRequestDto();
+        userRequestDto.setMobileId(MOBILE_ID);
+        userRequestDto.setPlanId(PLAN_ID);
+        userRequestDto.setAltMobileNumber(ALT_MOBILE_NUMBER);
+        userRequestDto.setName(USER_NAME);
+        userRequestDto.setEmail(EMAIL);
+        userRequestDto.setIdProofNumber(ADHAR_NUM);
+        userRequestDto.setIdProofType(ADHAR_TYPE);
+        userRequestDto.setLocation(LOCATION);
+        return userRequestDto;
+    }
+
+    private Connection getConnection() {
+
+        Connection connection = new Connection();
+        connection.setRequestdate(LocalDate.now());
+        connection.setStatus(Status.IN_PROGRESS.toString());
+        connection.setUpdateDate(LocalDate.now());
+        connection.setConnectionId(CONNECTION_ID);
+        connection.setRemark(REMARK);
+        return connection;
     }
 
 
