@@ -44,6 +44,15 @@ public class ConnectionServiceImplTest {
     private static final String USER_NAME = "Sree";
     private static final String PLAN_NAME = "Plan1";
     private static final String MOBILE_NUMBER = "9876564534";
+    private static final String ALT_MOBILE_NUMBER = "9876564534";
+    private static final String EMAIL = "a@gmail.com";
+    private static final String ADHAR_NUM = "1234123412341234";
+    private static final String ADHAR_TYPE = "Adhar";
+    private static final String LOCATION = "Banglore";
+    private static final Long PLAN_ID = 1L;
+    private static final Long MOBILE_ID = 1L;
+    private static final Long USER_ID = 1L;
+
 
     @Mock
     private ConnectionRepository connectionRepository;
@@ -73,12 +82,91 @@ public class ConnectionServiceImplTest {
     }
 
     @Test
-    public void shouldReturnConnectionList() {
+    public void shouldReturnConnectionnList() {
         doReturn(connections).when(connectionRepository).findAllByStatus(STATUS);
         List<ConnectionResponse> responses = connectionService.retrieveConnections();
         ConnectionResponse response = responses.get(0);
         Assert.assertEquals(CONNECTION_ID, response.getConnectionId());
 
+    }
+
+    @Test
+    public void testFetchByIdWhenIdIsAvailable() {
+        Connection conn = getConnection();
+        Mockito.when(connectionRepository.findById(Mockito.anyLong())).thenReturn(Optional.of(conn));
+        Optional<ConnectionResponse> connectionResponse = connectionService
+                .fetchById("1234");
+        Assert.assertTrue(connectionResponse.isPresent());
+        ConnectionResponse connection = connectionResponse.get();
+        Assert.assertEquals(STATUS, connection.getStatus());
+        Assert.assertEquals(UPDATE_DATE, connection.getUpdateDate());
+        Assert.assertNull(connection.getConnectionId());
+        Assert.assertNull(connection.getRemark());
+
+    }
+
+    @Test
+    public void testFetchByIdWhenIdIsAvailableNullValue() {
+
+        Boolean isException = false;
+        try {
+            connectionService.fetchById(null);
+        } catch (Exception ex) {
+            isException = true;
+            Assert.assertEquals("Please pass the proper value for request id in request", ex.getMessage());
+            Assert.assertTrue(ex instanceof MobileServiceProviderException);
+        }
+        Assert.assertTrue(isException);
+
+    }
+
+    @Test
+    public void testFetchByIdWhenIdNotAvailable() {
+
+        Mockito.when(connectionRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(null));
+        Boolean isException = false;
+        try {
+            connectionService.fetchById("1234");
+        } catch (Exception ex) {
+            isException = true;
+            Assert.assertEquals("Error while fetching connection details by id", ex.getMessage());
+            Assert.assertTrue(ex instanceof MobileServiceProviderException);
+        }
+        Assert.assertTrue(isException);
+
+    }
+
+    @Test
+    public void testFetchByIdWhenExceptionOnDbCall() {
+
+        Mockito.when(connectionRepository.findById(Mockito.anyLong()))
+                .thenThrow(new RuntimeException("Exception while fetching data from db"));
+        Boolean isException = false;
+        try {
+            connectionService.fetchById("1234");
+        } catch (Exception ex) {
+            isException = true;
+            Assert.assertEquals("Error while fetching connection details by id", ex.getMessage());
+            Assert.assertTrue(ex instanceof MobileServiceProviderException);
+        }
+        Assert.assertTrue(isException);
+
+    }
+
+    private List<Connection> buildConnections() {
+        List<Connection> connectionsList = new ArrayList<>();
+        Connection connection = getConnection();
+        User user = new User();
+        user.setName(USER_NAME);
+        connection.setUser(user);
+        Plan plan = new Plan();
+        plan.setPlanName(PLAN_NAME);
+        connection.setPlan(plan);
+        MobileInfo info = new MobileInfo();
+        info.setNumber(MOBILE_NUMBER);
+        connection.setMobileInfo(info);
+        connectionsList.add(connection);
+        return connectionsList;
     }
 
     @Test
@@ -120,43 +208,22 @@ public class ConnectionServiceImplTest {
     }
 
 
-    private List<Connection> buildConnections() {
-        List<Connection> connectionsList = new ArrayList<>();
-        Connection connection = new Connection();
-        connection.setConnectionId(CONNECTION_ID);
-        connection.setUpdateDate(UPDATE_DATE);
-        connection.setRequestdate(REQUEST_DATE);
-        connection.setStatus(STATUS);
-        connection.setRemark(REMARK);
-        User user = new User();
-        user.setName(USER_NAME);
-        connection.setUser(user);
-        Plan plan = new Plan();
-        plan.setPlanName(PLAN_NAME);
-        connection.setPlan(plan);
-        MobileInfo info = new MobileInfo();
-        info.setNumber(MOBILE_NUMBER);
-        connection.setMobileInfo(info);
-        connectionsList.add(connection);
-        return connectionsList;
-    }
-
     private UserRequestDto getUserRequestDto() {
         userRequestDto = new UserRequestDto();
-        userRequestDto.setMobileId(1l);
-        userRequestDto.setPlanId(1l);
-        userRequestDto.setAltMobileNumber("9090909090");
-        userRequestDto.setName("Priya");
-        userRequestDto.setEmail("a@gmail.com");
-        userRequestDto.setIdProofNumber("12341234");
-        userRequestDto.setIdProofType("Aadhar");
-        userRequestDto.setLocation("Banglore");
+        userRequestDto.setMobileId(MOBILE_ID);
+        userRequestDto.setPlanId(PLAN_ID);
+        userRequestDto.setAltMobileNumber(ALT_MOBILE_NUMBER);
+        userRequestDto.setName(USER_NAME);
+        userRequestDto.setEmail(EMAIL);
+        userRequestDto.setIdProofNumber(ADHAR_NUM);
+        userRequestDto.setIdProofType(ADHAR_TYPE);
+        userRequestDto.setLocation(LOCATION);
         return userRequestDto;
     }
 
     private User getUserEntity() {
         user = new User();
-        user.setUserId(1L);
+        user.setUserId(USER_ID);
         BeanUtils.copyProperties(userRequestDto, user);
         return user;
     }
@@ -165,20 +232,20 @@ public class ConnectionServiceImplTest {
         mobileInfo = new MobileInfo();
         mobileInfo.setMobileId(userRequestDto.getMobileId());
         mobileInfo.setStatus("A");
-        mobileInfo.setNumber("12341234");
+        mobileInfo.setNumber(MOBILE_NUMBER);
         return mobileInfo;
     }
 
     private Plan getPlanDto() {
 
-        Plan plan = new Plan();
+        plan = new Plan();
         plan.setPlanId(userRequestDto.getPlanId());
-        plan.setPlanName("AAA");
+        plan.setPlanName(PLAN_NAME);
 
         return plan;
     }
 
-    private Connection getConnectionEntity() {
+    private Connection getConnection() {
 
         connection = new Connection();
         connection.setMobileInfo(mobileInfo);
@@ -187,7 +254,7 @@ public class ConnectionServiceImplTest {
         connection.setStatus(Status.IN_PROGRESS.toString());
         connection.setUpdateDate(LocalDate.now());
         connection.setUser(user);
-        connection.setConnectionId(1L);
+        connection.setConnectionId(CONNECTION_ID);
         return connection;
     }
 
@@ -196,6 +263,6 @@ public class ConnectionServiceImplTest {
         getUserEntity();
         getMobileInoDto();
         getPlanDto();
-        getConnectionEntity();
+        getConnection();
     }
 }
