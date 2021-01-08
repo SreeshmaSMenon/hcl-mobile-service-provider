@@ -1,16 +1,11 @@
 package com.hcl.mobileserviceprovider.service.entity;
 
-import java.time.LocalDate;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.persistence.*;
+import java.time.LocalDate;
 
 @Entity
 @Table
@@ -18,20 +13,30 @@ import lombok.Setter;
 @Getter
 public class Connection {
 
-	@Id
-	@Column(nullable = false, updatable = false)
-	private Long connectionId;
-	@Column(nullable = false)
-	private Long userId;
-	@Column(nullable = false)
-	private Long planId;
-	@Column(nullable = false)
-	private Long mobileId;
-	@Column(nullable = false)
-	private String status;
-	@Column(nullable = false)
-	private LocalDate requestdate;
-	@Column(nullable = false)
-	private LocalDate updateDate;
-	private String remark;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(nullable = false, updatable = false)
+    private Long connectionId;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "plan_id")
+    @JsonBackReference
+    private Plan plan;
+
+    @ManyToOne
+    @JoinColumn(name = "mobile_id")
+    @JsonBackReference
+    private MobileInfo mobileInfo;
+
+    @Column(nullable = false)
+    private String status;
+    @Column(nullable = false)
+    private LocalDate requestdate;
+    @Column(nullable = false)
+    private LocalDate updateDate;
+    private String remark;
 }
