@@ -77,12 +77,13 @@ public class ConnectionControllerUnitTest {
     }
 
     @Test
-    public void retrieveDetailsForRequest() {
-
+    public void fetchConnectionByIdTest() {
         ConnectionResponse connectionResponse = getConnectionResponse();
-        Mockito.when(connectionService.fetchById(Mockito.anyString())).thenReturn(Optional.of(connectionResponse));
+        Mockito.when(connectionService.fetchById(Mockito.anyString()))
+                .thenReturn(Optional.of(connectionResponse));
 
-        ResponseEntity<Optional<ConnectionResponse>> actualResponse = connectionController.findById("1L");
+
+        ResponseEntity<Optional<ConnectionResponse>> actualResponse = connectionController.findById(String.valueOf(CONNECTION_ID));
         Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 
     }
