@@ -3,7 +3,7 @@ package com.hcl.mobileserviceprovider.controller;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -39,7 +39,7 @@ public class ConnectionControllerTest {
 		connection.setUpdateDate(localDate);
 		Mockito.when(connectionService.fetchById(Mockito.anyString())).thenReturn(Optional.of(connection));
 
-		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/connection/{id}", "1234")
+		RequestBuilder requestBuilder = MockMvcRequestBuilders.get("/connections/{id}", "1234")
 				.accept(MediaType.APPLICATION_JSON);
 
 		MvcResult result = mockMvc.perform(requestBuilder).andReturn();
