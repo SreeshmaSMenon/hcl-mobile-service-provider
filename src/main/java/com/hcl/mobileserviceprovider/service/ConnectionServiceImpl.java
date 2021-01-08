@@ -1,32 +1,28 @@
 package com.hcl.mobileserviceprovider.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
 import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
 import com.hcl.mobileserviceprovider.util.MobileServiceProviderConstants;
 import com.hcl.mobileserviceprovider.util.Status;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
-@NoArgsConstructor
 @Slf4j
 public class ConnectionServiceImpl implements ConnectionService {
 
 	private final ConnectionRepository connectionRepository;
-	
 
 	@Override
 	public List<ConnectionResponse> retrieveConnections() {
@@ -44,7 +40,6 @@ public class ConnectionServiceImpl implements ConnectionService {
 				}).collect(Collectors.toList());
 		return connectionResponseList;
 	}
-	
 
 	@Override
 	public Optional<ConnectionResponse> fetchById(String id) {
@@ -80,8 +75,7 @@ public class ConnectionServiceImpl implements ConnectionService {
 
 	private void validateId(String id) {
 		if (StringUtils.isEmpty(id)) {
-			throw new MobileServiceProviderException(
-					MobileServiceProviderConstants.EMPTY_REQUEST_ID);
+			throw new MobileServiceProviderException(MobileServiceProviderConstants.EMPTY_REQUEST_ID);
 		}
 
 	}
