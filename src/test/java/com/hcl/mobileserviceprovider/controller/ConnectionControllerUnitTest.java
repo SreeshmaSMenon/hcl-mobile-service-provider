@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -44,7 +45,7 @@ public class ConnectionControllerUnitTest {
 
 
     @Test
-    public void getAllEmployeesTest() {
+    public void retrieveConnectionsTest() {
         ConnectionResponse connectionResponse = getConnectionResponse();
         List<ConnectionResponse> connectionResponseList = new ArrayList<>();
         connectionResponseList.add(connectionResponse);
@@ -53,6 +54,18 @@ public class ConnectionControllerUnitTest {
 
 
         ResponseEntity<List<ConnectionResponse>> actualResponse = connectionController.retrieveConnections();
+        Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
+
+    }
+    
+    @Test
+    public void fetchConnectionByIdTest() {
+        ConnectionResponse connectionResponse = getConnectionResponse();
+        Mockito.when(connectionService.fetchById(Mockito.anyString()))
+                .thenReturn(Optional.of(connectionResponse));
+
+
+        ResponseEntity<Optional<ConnectionResponse>> actualResponse = connectionController.findById(String.valueOf(CONNECTION_ID));
         Assert.assertEquals(HttpStatus.OK, actualResponse.getStatusCode());
 
     }
