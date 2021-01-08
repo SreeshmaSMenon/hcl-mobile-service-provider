@@ -1,9 +1,8 @@
 package com.hcl.mobileserviceprovider.service;
 
 
-import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
-import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
-import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.service.dto.*;
+import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,4 +33,12 @@ public interface ConnectionService {
      * @return ResponseDto
      */
     Optional<ResponseDto> obtainConnection(UserRequestDto userRequestDto);
+
+    /**
+     * Obtain connection
+     *
+     * @param approveOrRejectConnection and id
+     * @return ApproveOrRejectConnectionResponse
+     */
+    ApproveOrRejectConnectionResponse approveOrRejectConnection(ApproveOrRejectConnection approveOrRejectConnection, Long id) throws InvalidConnectionIdException;
 }

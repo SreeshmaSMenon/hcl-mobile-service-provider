@@ -1,10 +1,9 @@
 package com.hcl.mobileserviceprovider.controller;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
-import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
-import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
-import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.service.dto.*;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
+import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
 import com.hcl.mobileserviceprovider.util.Status;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
@@ -88,6 +87,17 @@ public class ConnectionControllerUnitTest {
 
     }
 
+    @Test
+    public void testApproveOrRejectConnection() throws InvalidConnectionIdException {
+        ApproveOrRejectConnection approveOrRejectConnection = getApproveOrRejectConnection();
+        ApproveOrRejectConnectionResponse approveOrRejectConnectionResponse = getApproveOrRejectConnectionResponse();
+        Mockito.when(connectionService.approveOrRejectConnection(approveOrRejectConnection, 1L)).thenReturn(approveOrRejectConnectionResponse);
+
+        ResponseEntity<ApproveOrRejectConnectionResponse> result = connectionController.approveOrRejectConnection(approveOrRejectConnection, 1L);
+
+        Assert.assertEquals(HttpStatus.OK, result.getStatusCode());
+    }
+
     private ConnectionResponse getConnectionResponse() {
         ConnectionResponse connectionResponse = new ConnectionResponse();
         connectionResponse.setUserName(USER_NAME);
@@ -132,5 +142,18 @@ public class ConnectionControllerUnitTest {
         return connection;
     }
 
+    private ApproveOrRejectConnection getApproveOrRejectConnection() {
+        ApproveOrRejectConnection approveOrRejectConnection = new ApproveOrRejectConnection();
+        approveOrRejectConnection.setRemark("Accepted");
+        approveOrRejectConnection.setStatus("Approved");
+        return approveOrRejectConnection;
+    }
+
+    private ApproveOrRejectConnectionResponse getApproveOrRejectConnectionResponse() {
+        ApproveOrRejectConnectionResponse approveOrRejectConnectionResponse = new ApproveOrRejectConnectionResponse();
+        approveOrRejectConnectionResponse.setStatusCode(200);
+        approveOrRejectConnectionResponse.setMessage("Success");
+        return approveOrRejectConnectionResponse;
+    }
 
 }

@@ -1,9 +1,8 @@
 package com.hcl.mobileserviceprovider.controller;
 
 import com.hcl.mobileserviceprovider.service.ConnectionService;
-import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
-import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
-import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.service.dto.*;
+import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -56,6 +55,17 @@ public class ConnectionController {
     @PostMapping
     public ResponseEntity<Optional<ResponseDto>> createConnection(@RequestBody UserRequestDto userRequestDto) {
         return new ResponseEntity<>(connectionService.obtainConnection(userRequestDto), HttpStatus.OK);
+    }
+
+    /**
+     * Approve or Reject connection with given info
+     *
+     * @return ApproveOrRejectConnectionResponse
+     * @Param ApproveOrRejectConnection info
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApproveOrRejectConnectionResponse> approveOrRejectConnection(@RequestBody ApproveOrRejectConnection approveOrRejectConnection, @PathVariable Long id) throws InvalidConnectionIdException {
+        return new ResponseEntity<>(connectionService.approveOrRejectConnection(approveOrRejectConnection, id), HttpStatus.OK);
     }
 
 }

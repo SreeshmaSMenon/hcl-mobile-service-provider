@@ -1,12 +1,11 @@
 package com.hcl.mobileserviceprovider.service;
 
-import com.hcl.mobileserviceprovider.service.dto.ConnectionResponse;
-import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
-import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
+import com.hcl.mobileserviceprovider.service.dto.*;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
 import com.hcl.mobileserviceprovider.service.entity.MobileInfo;
 import com.hcl.mobileserviceprovider.service.entity.Plan;
 import com.hcl.mobileserviceprovider.service.entity.User;
+import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
 import com.hcl.mobileserviceprovider.service.exception.MobileServiceProviderException;
 import com.hcl.mobileserviceprovider.service.exception.UserNotFoundException;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
@@ -72,6 +71,8 @@ public class ConnectionServiceImplTest {
     private MobileInfo mobileInfo;
     private User user;
     private Plan plan;
+    private ApproveOrRejectConnection approveOrRejectConnection;
+    private ApproveOrRejectConnectionResponse approveOrRejectConnectionResponse;
 
 
     @BeforeEach
@@ -79,6 +80,7 @@ public class ConnectionServiceImplTest {
 
         connections = buildConnections();
         doCreateConnection();
+        doApproveOrRejectConnection();
     }
 
     @Test
@@ -207,6 +209,25 @@ public class ConnectionServiceImplTest {
         assertEquals(MobileServiceProviderConstants.ERROR_USER_ALREADY_EXIST, exception.getMessage());
     }
 
+    @Test
+    public void approveOrRejectConnection() throws InvalidConnectionIdException {
+        Mockito.when(connectionRepository.findById(1L)).thenReturn(Optional.of(connection));
+
+        ApproveOrRejectConnectionResponse result = connectionService.approveOrRejectConnection(approveOrRejectConnection, 1L);
+
+        assertEquals(approveOrRejectConnectionResponse.getMessage(), result.getMessage());
+        assertEquals(approveOrRejectConnectionResponse.getStatusCode(), result.getStatusCode());
+    }
+
+    @Test
+    public void approveOrRejectConnectionForException() {
+
+        Throwable exception = assertThrows(InvalidConnectionIdException.class, () -> {
+            connectionService.approveOrRejectConnection(approveOrRejectConnection, 2L);
+        });
+        assertEquals(MobileServiceProviderConstants.CONNECTION_ID_NOT_FOUND, exception.getMessage());
+    }
+
 
     private UserRequestDto getUserRequestDto() {
         userRequestDto = new UserRequestDto();
@@ -266,4 +287,24 @@ public class ConnectionServiceImplTest {
         getPlanDto();
         getConnection();
     }
+
+    private ApproveOrRejectConnection getApproveOrRejectConnection() {
+        approveOrRejectConnection = new ApproveOrRejectConnection();
+        approveOrRejectConnection.setRemark("Accepted");
+        approveOrRejectConnection.setStatus("Approved");
+        return approveOrRejectConnection;
+    }
+
+    private ApproveOrRejectConnectionResponse getApproveOrRejectConnectionResponse() {
+        approveOrRejectConnectionResponse = new ApproveOrRejectConnectionResponse();
+        approveOrRejectConnectionResponse.setStatusCode(200);
+        approveOrRejectConnectionResponse.setMessage("Success");
+        return approveOrRejectConnectionResponse;
+    }
+
+    private void doApproveOrRejectConnection() {
+        getApproveOrRejectConnection();
+        getApproveOrRejectConnectionResponse();
+    }
+
 }
