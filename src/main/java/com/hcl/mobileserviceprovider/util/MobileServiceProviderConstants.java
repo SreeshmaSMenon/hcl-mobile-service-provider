@@ -13,5 +13,8 @@ public class MobileServiceProviderConstants {
 	public static final String ERROR_CONNECTION_ID_NOT_AVAILABLE = "Details not available for the connection id provided";
 	public static final String ERROR_FETCHING_CONNECTION_DETAILS_BY_ID = "Error while fetching connection details by id";
 	public static final String EMPTY_REQUEST_ID = "Please pass the proper value for request id in request";
-	
+	public static final String CONNECTION_ID_NOT_FOUND = "ConnectionId Not Found";
+	public static final String SUCCESS_MESSAGE = "Success";
+	public static final Integer SUCCESS_CODE = 200;
+
 }
