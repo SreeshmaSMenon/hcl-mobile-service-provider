@@ -1,10 +1,9 @@
-package com.hcl.mobileserviceprovider.service.impl;
+package com.hcl.mobileserviceprovider.service;
 
 import com.hcl.mobileserviceprovider.service.ApproveOrRejectConnectionService;
 import com.hcl.mobileserviceprovider.service.dto.ApproveOrRejectConnection;
 import com.hcl.mobileserviceprovider.service.dto.ApproveOrRejectConnectionResponse;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
-import com.hcl.mobileserviceprovider.service.exception.ErrorResponse;
 import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
 import org.springframework.beans.factory.annotation.Autowired;

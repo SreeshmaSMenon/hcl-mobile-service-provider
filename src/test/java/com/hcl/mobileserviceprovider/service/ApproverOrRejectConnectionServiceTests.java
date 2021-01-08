@@ -4,7 +4,6 @@ import com.hcl.mobileserviceprovider.service.dto.ApproveOrRejectConnection;
 import com.hcl.mobileserviceprovider.service.dto.ApproveOrRejectConnectionResponse;
 import com.hcl.mobileserviceprovider.service.entity.Connection;
 import com.hcl.mobileserviceprovider.service.exception.InvalidConnectionIdException;
-import com.hcl.mobileserviceprovider.service.impl.ApproveOrRejectConnectionServiceImpl;
 import com.hcl.mobileserviceprovider.service.repository.ConnectionRepository;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @RunWith(MockitoJUnitRunner.class)
