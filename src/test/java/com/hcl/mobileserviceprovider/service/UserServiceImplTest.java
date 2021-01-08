@@ -1,4 +1,4 @@
-package com.hcl.mobileserviceprovider.service;
+/*package com.hcl.mobileserviceprovider.service;
 
 import com.hcl.mobileserviceprovider.service.dto.ResponseDto;
 import com.hcl.mobileserviceprovider.service.dto.UserRequestDto;
@@ -100,7 +100,7 @@ public class UserServiceImplTest {
         Assert.assertNotNull(savedCustomer);
     }
 
-  /*  @Test(expected = MobileServiceProviderException.class)
+    @Test(expected = MobileServiceProviderException.class)
     public void mobileNumberAlreadyAssigned() {
 
         Mockito.when(connectionRepository.findByMobileInfo(Mockito.any())).thenReturn(Optional.of(connection));
@@ -112,6 +112,7 @@ public class UserServiceImplTest {
 
         Mockito.when(userRepository.findByEmail(Mockito.any())).thenReturn(Optional.of(user));
         userService.obtainConnection(userRequestDto);
-    }*/
+    }
 
 }
+*/
