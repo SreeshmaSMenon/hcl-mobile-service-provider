@@ -255,6 +255,7 @@ public class ConnectionServiceImplTest {
         connection.setUpdateDate(LocalDate.now());
         connection.setUser(user);
         connection.setConnectionId(CONNECTION_ID);
+        connection.setRemark(REMARK);
         return connection;
     }
 
